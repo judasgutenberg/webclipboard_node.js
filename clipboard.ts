@@ -3,6 +3,7 @@ import express, { Request as ExpressRequest, Response as ExpressResponse }  from
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import mysql from 'mysql2/promise';
+import crypto from 'crypto';
  
 
 class WebClipboard {
@@ -12,6 +13,7 @@ class WebClipboard {
   private database: string;
   private encryptionPassword: string;
   private connection: mysql.Pool;
+  private iv: any;
 
   constructor() {
     this.serverName = 'your_server_name';
@@ -19,11 +21,12 @@ class WebClipboard {
     this.password = 'your_password';
     this.database = 'your_database';
     this.encryptionPassword = 'your_encryption_password';
+    this.iv = crypto.randomBytes(16);
     this.connection = mysql.createPool({
-        host: 'your_mysql_host',
-        user: 'your_mysql_user',
-        password: 'your_mysql_password',
-        database: 'your_database_name',
+        host: this.serverName,
+        user: this.username,
+        password: this.password,
+        database: this.database,
       });
   }
 
@@ -89,8 +92,10 @@ class WebClipboard {
   }
 
   private encryptEmail(email: string) {
-    // Implement your email encryption logic here
-    // Return the encrypted email
+    let cipher: any = crypto.createCipheriv('aes-256-cbc', Buffer.from(this.encryptionPassword), this.iv);
+    let encrypted = cipher.update(email);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return { iv: this.iv.toString('hex'), encryptedData: encrypted.toString('hex') };
   }
 
   private async saveClip(req: ExpressRequest, res: ExpressResponse) {
