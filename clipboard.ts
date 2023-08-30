@@ -20,10 +20,10 @@ class WebClipboard {
     this.database = 'your_database';
     this.encryptionPassword = 'your_encryption_password';
     this.connection = mysql.createPool({
-        host: 'your_mysql_host',
-        user: 'your_mysql_user',
-        password: 'your_mysql_password',
-        database: 'your_database_name',
+        host: this.serverName,
+        user: this.username,
+        password: this.password,
+        database: this.database,
       });
   }
 
