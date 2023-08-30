@@ -20,10 +20,10 @@ class WebClipboard {
     this.database = 'your_database';
     this.encryptionPassword = 'your_encryption_password';
     this.connection = mysql.createPool({
-        host: this.serverName,
-        user: this.username,
-        password: this.password,
-        database: this.database,
+        host: 'your_mysql_host',
+        user: 'your_mysql_user',
+        password: 'your_mysql_password',
+        database: 'your_database_name',
       });
   }
 
@@ -96,9 +96,13 @@ class WebClipboard {
   private async saveClip(req: ExpressRequest, res: ExpressResponse) {
     const userId = req.cookies['webClipBoard'];
     const clip = req.body.clip;
- 
+    const dateString: string = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const result = await this.connection.execute(
+        "INSERT INTO clipboard_item(user_id, clip, file_name, created) VALUES (?, ?,?,?)",
+        [userId, clip, null, dateString]
+      );
 
- 
+        
   }
 
  
