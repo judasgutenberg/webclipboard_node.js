@@ -43,7 +43,7 @@ class WebClipboard {
   }
 
   private async handleRequest(req: ExpressRequest, res: ExpressResponse) {
-    const mode = req.body.mode;
+    const mode = req.query.mode as string | undefined; 
     let out = '';
 
     if (mode === 'login') {
@@ -59,12 +59,13 @@ class WebClipboard {
   }
 
   private async loginUser(req: ExpressRequest, res: ExpressResponse) {
-    const email = req.body.email;
-    const password = req.body.password;
+    const email =  req.query.email as string;
+    const password = req.query.password as string;
     const cookieName = 'webClipBoard';
 
     // Check credentials and set the cookie if valid
-    const user = await this.getUser(email, password);
+
+    let user = await this.getUser(email, password);
     if (user) {
       const encryptedEmail = this.encryptEmail(email);
       res.cookie(cookieName, encryptedEmail, { maxAge: 30 * 365 * 24 * 60 * 60 * 1000 });
